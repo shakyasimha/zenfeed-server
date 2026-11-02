@@ -11,6 +11,8 @@ class ArticleController extends Controller
     //
     public function index()
     {
-        return response()->json(Article::all());
+        return response()->json(
+            Article::with('source')->latest('published_at')->paginate(15)
+        );
     }
 }

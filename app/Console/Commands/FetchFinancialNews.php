@@ -50,6 +50,7 @@ class FetchFinancialNews extends Command
                             'source_id' => $source->id,
                             'title' => $data['title'],
                             'snippet' => $data['snippet'] ?? null,
+                            'image_url' => $data['image_url'] ?? null,
                             'published_at' => $data['published_at'] ?? now(),
                         ]
                     );
