@@ -1,14 +1,14 @@
-# SiteScouter
+# zenfeed-server
 
-The backend service for the [Newsfeed Aggregator](../README.md) mobile app, written in PHP. SiteScouter's job is to find and collect content from news sites and blogs, and serve it to the app in a clean, consistent format so the client doesn't have to deal with the messy details of each source.
+The backend service for [ZenFeed](https://github.com/shakyasimha/zenfeed), a minimal news reader for Android. zenfeed-server is written in PHP. Its job is to collect content from news sites and blogs and serve it to the app in a clean, consistent format, so the client doesn't have to deal with the quirks of each source.
 
 > **Status:** Early development. Sections marked **TODO** need to be filled in as the implementation takes shape.
 
 ## What it does
 
-- Scouts configured sites and feeds (RSS/Atom) for new articles
+- Fetches configured sites and feeds (RSS/Atom) for new articles
 - Normalizes each article into one consistent shape: source, publish time, title, and snippet
-- Exposes the aggregated feed to the mobile app over a JSON API
+- Exposes the aggregated feed to the ZenFeed app over a JSON API
 
 **Planned**
 
@@ -22,7 +22,7 @@ The backend service for the [Newsfeed Aggregator](../README.md) mobile app, writ
 
 - PHP 8.1 or newer
 - [Composer](https://getcomposer.org) for dependencies
-- **TODO:** framework (if any), database (e.g. SQLite or MySQL), and feed-parsing library
+- **TODO:** framework (if any), database (for example SQLite or MySQL), and feed-parsing library
 
 ## Getting started
 
@@ -41,7 +41,7 @@ composer -V
 ### Install
 
 ```bash
-cd sitescouter
+cd zenfeed-server
 composer install
 ```
 
@@ -77,7 +77,7 @@ php -S 0.0.0.0:8000 -t public
 
 The API is then available at `http://localhost:8000`.
 
-## Connecting the mobile app
+## Connecting the ZenFeed app
 
 The Android emulator can't reach your computer through `localhost`. In the app, point the API base URL at:
 
@@ -85,7 +85,7 @@ The Android emulator can't reach your computer through `localhost`. In the app, 
 http://10.0.2.2:8000
 ```
 
-On a physical device with Expo Go, use your computer's LAN IP instead (for example `http://192.168.1.20:8000`), and make sure both are on the same network. You may also need to allow PHP through Windows Firewall.
+On a physical device with Expo Go, use your computer's LAN IP instead (for example `http://192.168.1.20:8000`). Both devices must be on the same network, and you may need to allow PHP through Windows Firewall.
 
 ## API
 
@@ -109,14 +109,14 @@ Example article response:
 }
 ```
 
-This matches the `Article` shape the mobile app already uses (`id`, `source`, `time`, `title`, `snippet`), so the app can consume it with minimal changes. The app currently shows `time` as a relative string like "12m ago", so either format it on the client from the timestamp or have the API return it.
+This matches the `Article` shape the app already uses (`id`, `source`, `time`, `title`, `snippet`). The app currently shows `time` as a relative string like "12m ago", so either format it on the client from the timestamp or have the API return it.
 
 ## Project structure
 
 **TODO:** update to match your layout. A typical one:
 
 ```
-sitescouter/
+zenfeed-server/
 ├── public/          # Web root (index.php entry point)
 ├── src/             # Application code
 ├── config/          # Configuration
@@ -129,7 +129,7 @@ sitescouter/
 
 - [ ] Fetch and parse RSS/Atom feeds
 - [ ] Store articles
-- [ ] JSON API consumed by the mobile app
+- [ ] JSON API consumed by the ZenFeed app
 - [ ] Source management
 - [ ] Scheduled refresh
 - [ ] Search
@@ -137,4 +137,4 @@ sitescouter/
 
 ## License
 
-Not yet specified.
+**TODO:** add a license. The ZenFeed app uses the MIT License, so you may want to match it.
