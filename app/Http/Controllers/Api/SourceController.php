@@ -3,42 +3,30 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Source;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class SourceController extends Controller
 {
-    //
-    public function index()
+    public function index(): JsonResponse
     {
-        return response()->json(Source::all());
+        return response()->json(
+            Source::where('is_active', true)
+                ->orderBy('name')
+                ->get(['id', 'name', 'url'])
+        );
     }
 
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
-        $validated = $request->validate(
-            [
-                'name' => 'required|string|max:255',
-                'url'  => 'required|url|unique:sources,url',
-                'type' => 'nullable|string|in:html,rss',
-            ]
-        );
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'url' => ['required', 'url', 'unique:sources,url'],
+            'type' => ['sometimes', 'in:rss,html'],
+            'feed_url' => ['nullable', 'url'],
+        ]);
 
-        $source = Source::create(
-            [
-                'name'      => $validated['name'],
-                'url'       => $validated['url'],
-                'type'      => $validated['type'] ?? null,
-                'is_active' => true,
-            ]
-        );
-
-        return response()->json(
-            [
-                'message' => 'Source registered successfully.',
-                'data'    => $source
-            ],
-            201
-        );
+        return response()->json(Source::create($data), 201);
     }
 }

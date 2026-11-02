@@ -9,6 +9,5 @@ use App\Http\Controllers\Api\ArticleController;
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
-Route::get('/sources', [SourceController::class, 'index']);     // GET request
-Route::get('/sources', [SourceController::class, 'store']);     // POST request
-Route::get('/articles', [ArticleController::class, 'index']);   // GET request
+Route::get('/sources', [SourceController::class, 'index']);
+Route::get('/articles', [ArticleController::class, 'index']);
