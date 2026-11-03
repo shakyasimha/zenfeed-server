@@ -10,4 +10,5 @@ use App\Http\Controllers\Api\ArticleController;
 // })->middleware('auth:sanctum');
 
 Route::get('/sources', [SourceController::class, 'index']);
+Route::post('/sources', [SourceController::class, 'store'])->middleware('throttle:10,1');
 Route::get('/articles', [ArticleController::class, 'index']);

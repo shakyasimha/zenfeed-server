@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\FetchSourceArticles;
+use App\Services\HtmlNewsExtractor;
 use App\Models\Source;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class SourceController extends Controller
 {
@@ -18,15 +21,26 @@ class SourceController extends Controller
         );
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(Request $request, HtmlNewsExtractor $extractor): JsonResponse
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'url' => ['required', 'url', 'unique:sources,url'],
-            'type' => ['sometimes', 'in:rss,html'],
-            'feed_url' => ['nullable', 'url'],
+            'url' => ['required', 'url:http,https', 'max:2048', 'unique:sources,url'],
         ]);
 
-        return response()->json(Source::create($data), 201);
+        $name = trim((string) ($data['name'] ?? ''));
+
+        $data['name'] = $name !== ''
+            ? $name
+            : ($extractor->siteName($data['url'])
+                ?? Str::of((string) parse_url($data['url'], PHP_URL_HOST))
+                ->replaceMatches('/^www\./i', '')
+                ->toString());
+
+        $source = Source::create($data);
+
+        FetchSourceArticles::dispatchAfterResponse($source);
+
+        return response()->json($source, 201);
     }
 }

@@ -652,6 +652,26 @@ class HtmlNewsExtractor
     }
 
     /**
+     * Fetch site's declared name
+     */
+    public function siteName(string $url): ?string
+    {
+        $html = $this->fetch($url, 8);
+
+        if ($html == null) {
+            return null;
+        }
+
+        $name = $this->firstAttribute(
+            new Crawler($html, $url),
+            'meta[property="og:site_name"], name[name="application-name"]',
+            'content',
+        );
+
+        return $name !== null ? Str::limit($this->cleanText($name), 100, '') : null;
+    }
+
+    /**
      * Make a possibly relative URL absolute. Returns null for empty or inline data: URLs.
      */
     private function resolveUrl(?string $url, string $base): ?string
