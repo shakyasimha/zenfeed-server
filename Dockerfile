@@ -5,6 +5,7 @@ RUN apt-get update && apt-get upgrade -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \ 
+    libpq-dev \
     zip \
     unzip \
     git \
