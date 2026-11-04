@@ -10,7 +10,7 @@ RUN apt-get update && apt-get upgrade -y \
     git \
     curl 
 
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd 
+RUN docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd 
 
 # Get composer 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer 
@@ -22,7 +22,7 @@ WORKDIR /var/www/html
 COPY . .
 
 # Install dependencies 
-RUN composer install --no-dev --optimize-autoloader 
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Set permissions for Laravel storage and cache 
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache 
