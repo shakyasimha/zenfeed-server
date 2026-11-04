@@ -3,11 +3,11 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vp build",
-        "build:ssr": "vp build && vp build --ssr",
-        "dev": "vp dev",
-        "check": "vp check",
-        "check:fix": "vp check --fix",
+        "build": "vite build",
+        "build:ssr": "vite build && vp build --ssr",
+        "dev": "vite dev",
+        "check": "vite check",
+        "check:fix": "vite check --fix",
         "types:check": "tsc --noEmit"
     },
     "dependencies": {
