@@ -1,40 +1,49 @@
 FROM php:8.5-apache
 
-# Install system dependencies and PHP extensions
-RUN apt-get update && apt-get upgrade -y \
+# 1. Install system dependencies, PostgreSQL libs, and curl for Node setup
+RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
-    libxml2-dev \ 
+    libxml2-dev \
+    libzip-dev \
     libpq-dev \
     zip \
     unzip \
     git \
-    curl 
+    curl
 
-RUN docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd 
+# 2. Install Node.js (LTS version) for Vite asset compilation
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
+    && apt-get install -y nodejs
 
-# Get composer 
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer 
+# 3. Install required PHP extensions
+RUN docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd zip
 
-# Set working directory 
-WORKDIR /var/www/html 
+# 4. Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy project files 
+# 5. Set working directory
+WORKDIR /var/www/html
+
+# 6. Copy project files
 COPY . .
 
-# Install dependencies 
+# 7. Install PHP dependencies without dev packages
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Set permissions for Laravel storage and cache 
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache 
+# 8. Install Node dependencies and build Vite assets
+RUN npm install && npm run build
 
-# Configure Apache document root to point to Laravel's public folder 
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public 
-RUN sed -ri -s 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf 
-RUN sed -ri -s 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf 
+# 9. Set permissions for Laravel storage and cache
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Enable Apache Mod rewrite 
-RUN a2enmod rewrite 
+# 10. Configure Apache document root for Laravel
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+RUN sed -ri -s 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -s 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
+
+# 11. Enable Apache Mod Rewrite
+RUN a2enmod rewrite
 
 EXPOSE 80
-
