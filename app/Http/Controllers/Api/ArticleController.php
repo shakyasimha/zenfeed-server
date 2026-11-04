@@ -20,7 +20,7 @@ class ArticleController extends Controller
                 ->when($filters['source_id'] ?? null, fn($query, $id) => $query->where('source_id', $id))
                 ->orderByRaw('published_at IS NULL')
                 ->orderByDesc('published_at')
-                ->limit(100)
+                ->limit(20)
                 ->get()
         );
     }
