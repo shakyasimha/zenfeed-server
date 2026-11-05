@@ -18,3 +18,6 @@ Route::get('/ping', function () {
 Route::get('/sources', [SourceController::class, 'index']);
 Route::post('/sources', [SourceController::class, 'store'])->middleware('throttle:10,1');
 Route::get('/articles', [ArticleController::class, 'index']);
+Route::post('/articles/refresh', [ArticleController::class, 'refresh'])
+    ->middleware('throttle:6,1'); // max 6 refreshes per minute per client
+Route::post('/news-fetch', [ArticleController::class, 'fetch']);
